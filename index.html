@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive text-based financial indicators developed by Beomseok Seo.">
+  <title>Text-based Financial Indices Hub</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer src="./vendor/plotly.min.js"></script>
+  <script defer src="./js/app.js"></script>
+</head>
+<body>
+  <div id="big-app-container">
+    <header class="banner">
+      <div class="banner-text">
+        <h1>Text-based Financial Indices Hub</h1>
+        <p>By Beomseok Seo</p>
+      </div>
+      <div class="banner-actions">
+        <a class="button" href="https://seo-beomseok.github.io" target="_blank" rel="noopener">GitHub</a>
+        <button class="button" id="learn-more-button" type="button">Learn more</button>
+        <img src="./assets/dash-logo-new.png" alt="Dashboard logo">
+      </div>
+    </header>
+
+    <main id="app-container">
+      <nav class="tabs" aria-label="Analyses">
+        <button class="tab active" type="button" data-tab="news">News Analysis</button>
+        <button class="tab" type="button" data-tab="market">Market Analysis</button>
+        <button class="tab" type="button" data-tab="factor">Factor Analysis</button>
+        <button class="tab" type="button" data-tab="event">Event Analysis</button>
+      </nav>
+
+      <section id="news" class="tab-panel active">
+        <div class="intro-card">
+          <p>News analysis provides Theme Frequency in News Indices (TFNI) that address information about 15 important fields in economy. The TFIs are computed based on about 4,000 economic news articles every day that are scraped from the internet. The total number of news articles used for this analysis is about 18 million.</p>
+          <div class="formula">$$TFNI_{t}=\sum\limits_{i=1}^{N_t} \hat{A}_i^{(t)} / N_t,\qquad \hat{A}_i^{(t)} = \bigvee\limits_{m=1}^{M_i} C_{im}^{(t)},\qquad C_{im}^{(t)} = \prod\limits_{k=1}^{K}\bigvee\limits_{l=1}^{L_k} I_{S_{im}^{(t)}}(w_l^{[k]})$$</div>
+          <p>where \(\Omega_t=\{A_1^{(t)},\cdots,A_{N_t}^{(t)}\}\) is the set of news articles at time \(t\), and the indicator identifies whether a sentence contains the word groups defining a specific economic field.</p>
+        </div>
+        <div class="controls-card">
+          <label>Period<select id="news-period"><option value="month">month</option><option value="week">week</option></select></label>
+          <label>Field<select id="news-field"></select></label>
+          <button class="update-button" id="news-update" type="button">Update</button>
+        </div>
+        <div class="graph-card"><div id="news-graph" class="plot"></div></div>
+        <div class="outro-card">
+          <ul>
+            <li><a href="https://www.bok.or.kr/portal/bbs/P0002353/view.do?nttId=10070554&menuNo=200433&pageIndex=1" target="_blank" rel="noopener">Economic Forecasting Using News Texts: The Compilation and Usage of Text-based Economic Field Indicators [뉴스 텍스트를 이용한 경기 예측: 경제부문별 텍스트 지표의 작성과 활용]</a>. (2022) Seo, Beomseok, BOK Issue Note 2022-(18).</li>
+            <li><a href="https://www.bok.or.kr/portal/bbs/P0002456/view.do?nttId=10077568&depth2=201156&depth3=200431&menuNo=201670" target="_blank" rel="noopener">Econometric Forecasting Using Ubiquitous News Texts: Text-enhanced Factor Model</a>. (2023) Seo, Beomseok, BOK Issue Note 2023-(10).</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="market" class="tab-panel">
+        <div class="intro-card">
+          <p>Market analysis compares the Text-based Business Confidence Indicators (TBCI) to the corresponding KOSPI indices by field. TBCIs are computed based on about 2,000 analyst reports per month generated from about 50 investment banks in Korea. The total number of analyst reports used for this analysis is about 130 thousand.</p>
+          <div class="formula">$$TBCI_{i,t}=\frac{X_{i,t}-\bar{X}_{i,.}}{s_{i,.}}\times 10+100$$</div>
+          <p>where \(X_{i,t}\) summarizes the balance of positive and negative sentences for field \(i\) at time \(t\).</p>
+        </div>
+        <div class="controls-card">
+          <label>Period<select id="market-period"><option value="quarter">quarter</option></select></label>
+          <label>Field<select id="market-field"></select></label>
+          <button class="update-button" id="market-update" type="button">Update</button>
+        </div>
+        <div class="graph-card"><div id="market-graph" class="plot"></div></div>
+        <div class="outro-card"><ul><li><a href="https://www.bok.or.kr/portal/bbs/P0002353/view.do?nttId=10075584&menuNo=200433&pageIndex=1" target="_blank" rel="noopener">Industrial Monitoring Using AI Algorithm: Analyst Report Text Mining [AI를 이용한 산업 모니터링: 증권사 리포트 텍스트 분석]</a>. (2023) Seo, Beomseok, BOK Issue Note 2023-(5).</li></ul></div>
+      </section>
+
+      <section id="factor" class="tab-panel">
+        <div class="intro-card">
+          <p>Factor analysis provides the Text-based Business Condition Factors (BC-factors) that show the top 5 issues in 40 industries that affect their business condition. BC-factors are computed based on about 2,000 analyst reports per month generated from about 50 investment banks in Korea.</p>
+          <div class="formula">$$BC\text{-}factors_{i,t}^{5}=\{(w^{[K]},\cdots,w^{[K-4]})\mid w^{[k]}=f(v_{(k)}),\;v=m_{U_{i,t}\setminus W}(w)\}$$</div>
+        </div>
+        <div class="controls-card">
+          <label>Field<select id="factor-field"></select></label>
+          <button class="update-button" id="factor-update" type="button">Update</button>
+        </div>
+        <div class="table-card"><div id="factor-table" class="factor-table-wrap"></div></div>
+        <p class="footnote">N: the number of sentences analyzed / C: the number of companies analyzed / A: the number of IBs that wrote the reports for the corresponding company, field, and time.</p>
+        <div class="controls-card compact">
+          <label class="slider-label">Max depth <span id="treemap-depth-value">2</span><input id="treemap-depth" type="range" min="2" max="4" step="1" value="2"></label>
+        </div>
+        <div class="graph-card"><div id="treemap-graph" class="plot treemap"></div></div>
+        <div class="outro-card"><ul><li><a href="https://www.bok.or.kr/portal/bbs/P0002353/view.do?nttId=10075584&menuNo=200433&pageIndex=1" target="_blank" rel="noopener">Industrial Monitoring Using AI Algorithm: Analyst Report Text Mining [AI를 이용한 산업 모니터링: 증권사 리포트 텍스트 분석]</a>. (2023) Seo, Beomseok, BOK Issue Note 2023-(5).</li></ul></div>
+      </section>
+
+      <section id="event" class="tab-panel">
+        <div class="intro-card">
+          <p>Event analysis provides examples of Text-based Impact of an Event Indicators (TIEI) and Text-based Evaluation of an Event Indicators (TEEI) for events selected for their importance in the economy.</p>
+          <div class="formula">$$TIEI^{\mathcal{A}_w}_{i,t}=\frac{\sum_{s\in S_{i,t}} I(s\in\mathcal{A}_w)}{|S_{i,t}|}\times100,\qquad TEEI^A_{i,t}=\frac{X_{i,t}-\bar{X}_{i,.}}{s_{i,.}}\times10+100$$</div>
+        </div>
+        <div class="controls-card">
+          <label>Event<select id="event-name"></select></label>
+          <label>Measure<select id="event-item"><option>Impact</option><option>Evaluation</option></select></label>
+          <button class="update-button" id="event-update" type="button">Update</button>
+        </div>
+        <div class="graph-card"><div id="event-graph" class="plot"></div></div>
+        <div class="outro-card"><ul><li><a href="https://www.bok.or.kr/portal/bbs/P0002353/view.do?nttId=10075584&menuNo=200433&pageIndex=1" target="_blank" rel="noopener">Industrial Monitoring Using AI Algorithm: Analyst Report Text Mining [AI를 이용한 산업 모니터링: 증권사 리포트 텍스트 분석]</a>. (2023) Seo, Beomseok, BOK Issue Note 2023-(5).</li></ul></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button id="modal-close" class="modal-close" type="button">Close</button>
+      <h2 id="modal-title">What is this app about?</h2>
+      <p>This dashboard provides a monitoring system for text-based financial indicators based on the methods developed by Beomseok Seo (2022, 2023). The presented data may be incomplete or outdated, so the information should be used with appropriate caution.</p>
+      <p class="static-note">This GitHub Pages edition runs fully in the browser. No Python/Dash server is required after deployment.</p>
+    </div>
+  </div>
+</body>
+</html>
